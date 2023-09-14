@@ -574,20 +574,17 @@ class Products extends CI_Controller
         $this->load->view('Administrator/products/barcode_fancybox', $data);
     }
 
-    public function barcodeGenerate($Product_SlNo = 0, $detail_id)
+    public function purchasewisebarcodeGenerate($purchaseId)
     {
-        $product = array(
-            'PurchaseDetails_SlNo' => $detail_id,
-            'Product_SlNo' => $Product_SlNo,
-        );
-        $data['product'] = $this->Billing_model->select_Product_by_id($product);
+        $data['purchaseId'] = $purchaseId;
+        $this->load->view('Administrator/products/barcode/allbarcode', $data);
+    }
+
+    public function barcodeGenerate($Product_SlNo)
+    {
+        $data['product'] = $this->Billing_model->select_Product_by_id($Product_SlNo);
         $this->load->view('Administrator/products/barcode/barcode', $data);
     }
-    // public function barcodeGenerate($Product_SlNo)
-    // {
-    //     $data['product'] = $this->Billing_model->select_Product_by_id($Product_SlNo);
-    //     $this->load->view('Administrator/products/barcode/barcode', $data);
-    // }
 
     function barcode($kode)
     {

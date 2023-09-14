@@ -263,27 +263,13 @@ class Billing_model extends CI_Model
 		return $result;
 	}
 
-	// public function select_Product_by_id($Product_SlNo){
-	// 	$this->db->select('*');
-	// 	$this->db->from('tbl_product');
-	// 	$this->db->where('Product_SlNo',$Product_SlNo);
-	// 	$query = $this->db->get();
-	// 	$result = $query->row();
-	// 	return $result;
-	// }
-
-	public function select_Product_by_id($product)
+	public function select_Product_by_id($Product_SlNo)
 	{
-		$result = $this->db->query("SELECT
-									p.Product_SlNo,
-									p.Product_Code,
-									p.Product_Name,
-									p.Product_SellingPrice,
-									pd.PurchaseDetails_TotalQuantity
-								FROM tbl_purchasedetails pd
-								LEFT JOIN tbl_product p ON p.Product_SlNo = pd.Product_IDNo
-								WHERE pd.Status = 'a' AND pd.PurchaseDetails_SlNo = ? AND pd.Product_IDNo = ?", [$product['PurchaseDetails_SlNo'],$product['Product_SlNo']])->row();
-							
+		$this->db->select('*');
+		$this->db->from('tbl_product');
+		$this->db->where('Product_SlNo', $Product_SlNo);
+		$query = $this->db->get();
+		$result = $query->row();
 		return $result;
 	}
 

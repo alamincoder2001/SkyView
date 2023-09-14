@@ -62,7 +62,7 @@
 	<script type="text/javascript">
 		function printpage() {
 			// document.getElementById('printButton').style.visibility="hidden";
-			document.querySelector('.documentbody').style.display="none";
+			document.querySelector('.documentbody').style.display = "none";
 			document.getElementById("printButton").style.cssText = "visibility:hidden;height:0px;margin-top:0px"
 			document.getElementById('printButton2').style.visibility = "hidden";
 			window.print();
@@ -112,7 +112,7 @@
 						<div class="form-group">
 							<label class="control-label col-xs-2" for="qty">Quantity</label>
 							<div class="col-xs-2">
-								<input type="text" name="qty" class="form-control mytext" value="<?php echo $product->PurchaseDetails_TotalQuantity; ?>" placeholder="Product quantity ...">
+								<input type="text" name="qty" class="form-control mytext" placeholder="Product quantity ...">
 							</div>
 
 							<label style="display: none;" class="control-label col-xs-2" for="date">Date</label>
@@ -143,20 +143,9 @@
 						$pname = $_POST['pname'];
 						$Price = $_POST['Price'];
 						for ($i = 0; $i < $qty; $i++) {
-						if (isset($kode)) : echo $kode; endif;
+							if (isset($kode)) : echo $kode;
+							endif;
 					?>
-							<!-- <div id="imageOutput" style="padding:5px;width:172px;float:left;background:#fff;border:1px #ccc solid;" align="center">	
-							  <div class="article"><?php echo $article; ?></div>
-							  <div class="content">
-								<div class="name"><?php echo $pname; ?></div>
-								<div class="img">
-									<img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $PID; ?>' style="height: 1.3cm; width: 2.5cm;"/>
-								</div>
-								<div class="price"><?php echo $this->session->userdata('Currency_Name') . ' ' . $Price; ?></div>
-							  </div>
-							<div class="date"><?php echo $date; ?></div>
-						</div> -->
-
 
 							<div style="padding: 2px; float: left; height: 102.5px; width: 135px; border: 1px solid #ddd;">
 								<div style="width: 135px; text-align: center; float: right;">
@@ -166,7 +155,8 @@
 									<span style=" margin-top: 5px; text-align: center;"><?php echo $this->session->userdata('Currency_Name') . ' ' . $Price; ?></span>
 								</div>
 							</div>
-					<?php } } ?>
+					<?php }
+					} ?>
 
 				</section>
 			</div>
