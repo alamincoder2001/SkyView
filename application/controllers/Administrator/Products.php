@@ -188,6 +188,8 @@ class Products extends CI_Controller
                 concat(p.Product_Name, ' - ', p.Product_Code) as display_text,
                 pc.ProductCategory_Name,
                 psc.SubCategoryName,
+                s.Supplier_Name,
+                s.Supplier_Code,
                 br.brand_name,
                 u.Unit_Name
             from tbl_product p
@@ -195,6 +197,7 @@ class Products extends CI_Controller
             LEFT JOIN tbl_productsubcategory psc on psc.SubCat_ID = p.ProductSubCategory_ID
             left join tbl_brand br on br.brand_SiNo = p.brand
             left join tbl_unit u on u.Unit_SlNo = p.Unit_ID
+            left join tbl_supplier s on s.Supplier_SlNo = p.supplierId
             where p.status = 'a'
             $clauses
             order by p.Product_SlNo desc
@@ -571,11 +574,20 @@ class Products extends CI_Controller
         $this->load->view('Administrator/products/barcode_fancybox', $data);
     }
 
-    public function barcodeGenerate($Product_SlNo)
+    public function barcodeGenerate($Product_SlNo = 0, $detail_id)
     {
-        $data['product'] = $this->Billing_model->select_Product_by_id($Product_SlNo);
+        $product = array(
+            'PurchaseDetails_SlNo' => $detail_id,
+            'Product_SlNo' => $Product_SlNo,
+        );
+        $data['product'] = $this->Billing_model->select_Product_by_id($product);
         $this->load->view('Administrator/products/barcode/barcode', $data);
     }
+    // public function barcodeGenerate($Product_SlNo)
+    // {
+    //     $data['product'] = $this->Billing_model->select_Product_by_id($Product_SlNo);
+    //     $this->load->view('Administrator/products/barcode/barcode', $data);
+    // }
 
     function barcode($kode)
     {

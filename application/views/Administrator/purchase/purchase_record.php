@@ -134,6 +134,7 @@
 							<th>Price</th>
 							<th>Quantity</th>
 							<th>Total</th>
+							<th></th>
 							<th>Action</th>
 						</tr>
 					</thead>
@@ -147,6 +148,11 @@
 								<td style="text-align:right;">{{ purchase.purchaseDetails[0].PurchaseDetails_Rate }}</td>
 								<td style="text-align:center;">{{ purchase.purchaseDetails[0].PurchaseDetails_TotalQuantity }}</td>
 								<td style="text-align:right;">{{ purchase.purchaseDetails[0].PurchaseDetails_TotalAmount }}</td>
+								<td>
+									<button type="button" class="button" @click="window.location = `/Administrator/products/barcodeGenerate/${purchase.purchaseDetails[0].Product_IDNo}/${purchase.purchaseDetails[0].PurchaseDetails_SlNo}`">
+										<i class="fa fa-barcode"></i>
+									</button>
+								</td>
 								<td style="text-align:center;">
 									<a href="" title="Purchase Invoice" v-bind:href="`/purchase_invoice_print/${purchase.PurchaseMaster_SlNo}`" target="_blank"><i class="fa fa-file-text"></i></a>
 									<?php if($this->session->userdata('accountType') != 'u'){?>
@@ -161,6 +167,11 @@
 								<td style="text-align:right;">{{ product.PurchaseDetails_Rate }}</td>
 								<td style="text-align:center;">{{ product.PurchaseDetails_TotalQuantity }}</td>
 								<td style="text-align:right;">{{ product.PurchaseDetails_TotalAmount }}</td>
+								<td>
+									<button type="button" class="button" @click="window.location = `/Administrator/products/barcodeGenerate/${product.Product_IDNo}/${product.PurchaseDetails_SlNo}`">
+										<i class="fa fa-barcode"></i>
+									</button>
+								</td>
 								<td></td>
 							</tr>
 							<tr style="font-weight:bold;">
@@ -171,7 +182,7 @@
 									Paid: {{ purchase.PurchaseMaster_PaidAmount }}<br>
 									Due: {{ purchase.PurchaseMaster_DueAmount }}
 								</td>
-								<td></td>
+								<td colspan="2"></td>
 							</tr>
 						</template>
 					</tbody>

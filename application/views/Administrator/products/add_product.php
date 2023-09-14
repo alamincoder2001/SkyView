@@ -205,9 +205,9 @@
 										<i class="fa fa-trash"></i>
 									</button>
 								<?php } ?>
-								<button type="button" class="button" @click="window.location = `/Administrator/products/barcodeGenerate/${row.Product_SlNo}`">
+								<!-- <button type="button" class="button" @click="window.location = `/Administrator/products/barcodeGenerate/${row.Product_SlNo}`">
 									<i class="fa fa-barcode"></i>
-								</button>
+								</button> -->
 							</td>
 						</tr>
 					</template>
@@ -342,11 +342,11 @@
 				if (event.target.id == 'selling_percentage') {
 					this.product.Product_SellingPrice = parseFloat((parseFloat(this.product.Product_Purchase_Rate) * parseFloat(this.product.Product_SellingPrice_Percentage) / 100) + +parseFloat(this.product.Product_Purchase_Rate)).toFixed(2);
 				} else if (event.target.id == 'selling_rate') {
-					console.log('selling_rate');
+					this.product.Product_SellingPrice_Percentage = parseFloat(((parseFloat(this.product.Product_SellingPrice)-parseFloat(this.product.Product_Purchase_Rate))*100)/parseFloat(this.product.Product_Purchase_Rate)).toFixed(2);
 				} else if (event.target.id == 'wholesale_percentage') {
 					this.product.Product_WholesaleRate = parseFloat((parseFloat(this.product.Product_Purchase_Rate) * parseFloat(this.product.Product_WholesaleRate_Percentage) / 100) + +parseFloat(this.product.Product_Purchase_Rate)).toFixed(2);
 				} else if (event.target.id == 'wholesale_rate') {
-					console.log('wholesale_rate');
+					this.product.Product_WholesaleRate_Percentage = parseFloat(((parseFloat(this.product.Product_WholesaleRate)-parseFloat(this.product.Product_Purchase_Rate))*100)/parseFloat(this.product.Product_Purchase_Rate)).toFixed(2);
 				}
 			},
 			getSuppliers() {
@@ -411,6 +411,7 @@
 				}
 
 				this.product.ProductCategory_ID = this.selectedCategory.ProductCategory_SlNo;
+				this.product.supplierId = this.selectedSupplier.Supplier_SlNo;
 				this.product.ProductSubCategory_ID = this.selectedSubCategory.SubCat_ID;
 				this.product.Unit_ID = this.selectedUnit.Unit_SlNo;
 
@@ -438,6 +439,10 @@
 
 				this.product.is_service = product.is_service == 'true' ? true : false;
 
+				this.selectedSupplier = {
+					Supplier_SlNo: product.supplierId,
+					display_name: `${product.Supplier_Code} - ${product.Supplier_Name}`,
+				}
 				this.selectedBrand = {
 					brand_SiNo: product.brand,
 					brand_name: product.brand_name
@@ -486,6 +491,15 @@
 				this.selectedCategory = null;
 				this.selectedSubCategory = null;
 				this.selectedUnit = null;
+				this.selectedSupplier = {
+					Supplier_SlNo: null,
+					Supplier_Code: '',
+					Supplier_Name: '',
+					display_name: 'Select Supplier',
+					Supplier_Mobile: '',
+					Supplier_Address: '',
+					Supplier_Type: ''
+				};
 			}
 		}
 	})
