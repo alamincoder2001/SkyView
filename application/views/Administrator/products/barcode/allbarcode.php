@@ -5,15 +5,6 @@
     <title>Barcode Generator</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
-        @media print {
-
-            table,
-            img,
-            svg {
-                break-inside: avoid;
-            }
-        }
-
         .article {
             min-height: 90px;
             max-height: 100px;
@@ -115,41 +106,36 @@
             <div class="output col-md-8 col-md-offset-2">
 
                 <section class="output">
-                    <div class="row">
+                    <?php
 
-                        <?php
-
-                        if (isset($_REQUEST['submit'])) {
-                            $purchaseId = $_POST['purchaseId'];
-                            $article = $_POST['article'];
-                            $purchases = $this->db->query("SELECT
-                                                                p.Product_SlNo,
-                                                                p.Product_Code,
-                                                                p.Product_Name,
-                                                                p.Product_SellingPrice,
-                                                                pd.PurchaseDetails_TotalQuantity
-                                                            FROM tbl_purchasedetails pd
-                                                            LEFT JOIN tbl_product p ON p.Product_SlNo = pd.Product_IDNo
-                                                            WHERE pd.Status = 'a' AND pd.PurchaseMaster_IDNo = ?", $purchaseId)->result();
-                            foreach ($purchases as $item) {
-                                for ($i = 0; $i < $item->PurchaseDetails_TotalQuantity; $i++) {
-                                    if (isset($kode)) : echo $kode;
-                                    endif;
-                        ?>
-                                    <div class="col-xs-2" style="border: 1px solid #ddd;padding:0;">
-                                        <!-- <div style="padding: 2px; float: left; height: 102.5px; width: 135px; border: 1px solid #ddd;"> -->
-                                            <div style="width: 100%; text-align: center;">
-                                                <span class="article" style="font-size: 12px;"><?php echo $article; ?></span>
-                                                <span style="font-size: 12px; text-align: center;"><?php echo $item->Product_Name; ?></span>
-                                                <img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $item->Product_SlNo; ?>' style="height: 50px; width: 100px;" /><br>
-                                                <span style=" margin-top: 5px; text-align: center;"><?php echo $this->session->userdata('Currency_Name') . ' ' . $item->Product_SellingPrice; ?></span>
-                                            </div>
-                                        <!-- </div> -->
+                    if (isset($_REQUEST['submit'])) {
+                        $purchaseId = $_POST['purchaseId'];
+                        $article = $_POST['article'];
+                        $purchases = $this->db->query("SELECT
+                                                            p.Product_SlNo,
+                                                            p.Product_Code,
+                                                            p.Product_Name,
+                                                            p.Product_SellingPrice,
+                                                            pd.PurchaseDetails_TotalQuantity
+                                                        FROM tbl_purchasedetails pd
+                                                        LEFT JOIN tbl_product p ON p.Product_SlNo = pd.Product_IDNo
+                                                        WHERE pd.Status = 'a' AND pd.PurchaseMaster_IDNo = ?", $purchaseId)->result();
+                        foreach ($purchases as $item) {
+                            for ($i = 0; $i < $item->PurchaseDetails_TotalQuantity; $i++) {
+                                if (isset($kode)) : echo $kode;
+                                endif;
+                    ?>
+                                <div style="padding: 2px; float: left; height: 102.5px; width: 135px; border: 1px solid #ddd;">
+                                    <div style="width: 135px; text-align: center; float: right;">
+                                        <span class="article" style="font-size: 12px;"><?php echo $article; ?></span>
+                                        <span style="font-size: 12px; text-align: center;"><?php echo $item->Product_Name; ?></span>
+                                        <img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $item->Product_SlNo; ?>' style="height: 50px; width: 100px;" /><br>
+                                        <span style=" margin-top: 5px; text-align: center;"><?php echo $this->session->userdata('Currency_Name') . ' ' . $item->Product_SellingPrice; ?></span>
                                     </div>
-                        <?php }
-                            }
-                        } ?>
-                    </div>
+                                </div>
+                    <?php }
+                        }
+                    } ?>
 
                 </section>
             </div>
