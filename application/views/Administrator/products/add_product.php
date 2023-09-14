@@ -86,7 +86,7 @@
 					<div class="col-md-1" style="padding:0;margin-left: -15px;"><a href="/sub_category" target="_blank" class="add-button"><i class="fa fa-plus"></i></a></div>
 				</div>
 
-				<div class="form-group clearfix" style="display:none;">
+				<div class="form-group clearfix">
 					<label class="control-label col-md-4">Brand:</label>
 					<div class="col-md-7">
 						<v-select v-bind:options="brands" v-model="selectedBrand" label="brand_name"></v-select>
@@ -109,14 +109,21 @@
 					<div class="col-md-1" style="padding:0;margin-left: -15px;"><a href="/unit" target="_blank" class="add-button"><i class="fa fa-plus"></i></a></div>
 				</div>
 				<div class="form-group clearfix">
+					<label class="control-label col-md-4">Supplier:</label>
+					<div class="col-md-7">
+						<v-select v-bind:options="suppliers" v-model="selectedSupplier" label="display_name"></v-select>
+					</div>
+					<div class="col-md-1" style="padding:0;margin-left: -15px;"><a href="supplier" class="add-button"><i class="fa fa-plus"></i></a></div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group clearfix">
 					<label class="control-label col-md-4">VAT:</label>
 					<div class="col-md-7">
 						<input type="text" class="form-control" v-model="product.vat">
 					</div>
 				</div>
-			</div>
-
-			<div class="col-md-6">
 				<div class="form-group clearfix">
 					<label class="control-label col-md-4">Re-order level:</label>
 					<div class="col-md-7">
@@ -127,21 +134,29 @@
 				<div class="form-group clearfix">
 					<label class="control-label col-md-4">Purchase Rate:</label>
 					<div class="col-md-7">
-						<input type="text" id="purchase_rate" class="form-control" v-model="product.Product_Purchase_Rate" required v-bind:disabled="product.is_service ? true : false">
+						<input type="text" id="purchase_rate" @input="calculateTotal" class="form-control" v-model="product.Product_Purchase_Rate" required autocomplete="off" v-bind:disabled="product.is_service ? true : false">
 					</div>
 				</div>
 
 				<div class="form-group clearfix">
-					<label class="control-label col-md-4">Sales Rate:</label>
-					<div class="col-md-7">
-						<input type="text" class="form-control" v-model="product.Product_SellingPrice" required>
+					<label class="control-label col-xs-4">Sales Rate:</label>
+					<div class="col-xs-3">
+						<input type="text" id="selling_percentage" @input="calculateTotal" class="form-control" v-model="product.Product_SellingPrice_Percentage" required :disabled="product.Product_Purchase_Rate == 0">
+					</div>
+					<label class="col-xs-1 no-padding-left">%</label>
+					<div class="col-xs-3">
+						<input type="text" id="selling_rate" @input="calculateTotal" class="form-control" v-model="product.Product_SellingPrice" required :disabled="product.Product_Purchase_Rate == 0">
 					</div>
 				</div>
 
 				<div class="form-group clearfix">
-					<label class="control-label col-md-4">Wholesale Rate:</label>
-					<div class="col-md-7">
-						<input type="text" class="form-control" v-model="product.Product_WholesaleRate" required>
+					<label class="control-label col-xs-4">Wholesale Rate:</label>
+					<div class="col-xs-3">
+						<input type="text" id="wholesale_percentage" @input="calculateTotal" class="form-control" v-model="product.Product_WholesaleRate_Percentage" required :disabled="product.Product_Purchase_Rate == 0">
+					</div>
+					<label class="col-xs-1 no-padding-left">%</label>
+					<div class="col-xs-3">
+						<input type="text" id="wholesale_rate" @input="calculateTotal" class="form-control" v-model="product.Product_WholesaleRate" required :disabled="product.Product_Purchase_Rate == 0">
 					</div>
 				</div>
 				<div class="form-group clearfix">
@@ -224,9 +239,11 @@
 					ProductCategory_ID: '',
 					ProductSubCategory_ID: '',
 					brand: '',
-					Product_ReOrederLevel: '',
-					Product_Purchase_Rate: '',
-					Product_SellingPrice: '',
+					Product_ReOrederLevel: 0,
+					Product_Purchase_Rate: 0,
+					Product_SellingPrice_Percentage: 0,
+					Product_SellingPrice: 0,
+					Product_WholesaleRate_Percentage: 0,
 					Product_WholesaleRate: 0,
 					Unit_ID: '',
 					vat: 0,
@@ -241,6 +258,16 @@
 				selectedBrand: null,
 				units: [],
 				selectedUnit: null,
+				suppliers: [],
+				selectedSupplier: {
+					Supplier_SlNo: null,
+					Supplier_Code: '',
+					Supplier_Name: '',
+					display_name: 'Select Supplier',
+					Supplier_Mobile: '',
+					Supplier_Address: '',
+					Supplier_Type: ''
+				},
 
 				columns: [{
 						label: 'Product Id',
@@ -300,13 +327,33 @@
 			}
 		},
 		created() {
+			this.getSuppliers();
 			this.getCategories();
-			// this.getCategories();
 			this.getBrands();
 			this.getUnits();
 			this.getProducts();
 		},
 		methods: {
+			calculateTotal() {
+				if (event.target.id == 'purchase_rate') {
+					this.product.Product_SellingPrice = this.product.Product_Purchase_Rate
+					this.product.Product_WholesaleRate = this.product.Product_Purchase_Rate
+				}
+				if (event.target.id == 'selling_percentage') {
+					this.product.Product_SellingPrice = parseFloat((parseFloat(this.product.Product_Purchase_Rate) * parseFloat(this.product.Product_SellingPrice_Percentage) / 100) + +parseFloat(this.product.Product_Purchase_Rate)).toFixed(2);
+				} else if (event.target.id == 'selling_rate') {
+					console.log('selling_rate');
+				} else if (event.target.id == 'wholesale_percentage') {
+					this.product.Product_WholesaleRate = parseFloat((parseFloat(this.product.Product_Purchase_Rate) * parseFloat(this.product.Product_WholesaleRate_Percentage) / 100) + +parseFloat(this.product.Product_Purchase_Rate)).toFixed(2);
+				} else if (event.target.id == 'wholesale_rate') {
+					console.log('wholesale_rate');
+				}
+			},
+			getSuppliers() {
+				axios.get('/get_suppliers').then(res => {
+					this.suppliers = res.data;
+				})
+			},
 			onChangeCategory() {
 				if (this.product.Product_SlNo == '') {
 					this.selectedSubCategory = null;
@@ -391,6 +438,10 @@
 
 				this.product.is_service = product.is_service == 'true' ? true : false;
 
+				this.selectedBrand = {
+					brand_SiNo: product.brand,
+					brand_name: product.brand_name
+				}
 				this.selectedCategory = {
 					ProductCategory_SlNo: product.ProductCategory_ID,
 					ProductCategory_Name: product.ProductCategory_Name
@@ -431,6 +482,7 @@
 					}
 				})
 
+				this.selectedBrand = null;
 				this.selectedCategory = null;
 				this.selectedSubCategory = null;
 				this.selectedUnit = null;
