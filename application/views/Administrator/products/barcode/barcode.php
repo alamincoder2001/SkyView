@@ -147,12 +147,12 @@
 							endif;
 					?>
 
-							<div style="padding: 2px; float: left; height: 102.5px; width: 135px; border: 1px solid #ddd;">
+							<div style="padding: 2px; float: left; height: 104.6px; width: 135px; border: 1px solid #ddd;">
 								<div style="width: 135px; text-align: center; float: right;">
 									<span class="article" style="font-size: 12px;"><?php echo $article; ?></span>
-									<span style="font-size: 12px; text-align: center;"><?php echo $pname; ?></span>
+									<p style="font-size: 9px; text-align: center;margin:0;padding-top:4px;"><?php echo $pname; ?></p>
 									<img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $PID; ?>' style="height: 50px; width: 100px;" /><br>
-									<span style=" margin-top: 5px; text-align: center;"><?php echo $this->session->userdata('Currency_Name') . ' ' . $Price; ?></span>
+									<p style="margin:0;margin-top: 5px; text-align: center;"><?php echo $this->session->userdata('Currency_Name') . ' ' . $Price; ?></p>
 								</div>
 							</div>
 					<?php }

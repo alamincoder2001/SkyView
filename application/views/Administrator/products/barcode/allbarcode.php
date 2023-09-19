@@ -8,7 +8,7 @@
         .article {
             min-height: 90px;
             max-height: 100px;
-            width: 20px;
+            width: 15px;
             float: left;
             writing-mode: tb-rl;
         }
@@ -125,12 +125,12 @@
                                 if (isset($kode)) : echo $kode;
                                 endif;
                     ?>
-                                <div style="padding: 2px; float: left; height: 102.5px; width: 135px; border: 1px solid #ddd;">
+                                <div style="padding:2px;float: left; height: 104.6px; width: 135px; border: 1px solid #ddd;">
                                     <div style="width: 135px; text-align: center; float: right;">
                                         <span class="article" style="font-size: 12px;"><?php echo $article; ?></span>
-                                        <span style="font-size: 12px; text-align: center;"><?php echo $item->Product_Name; ?></span>
+                                        <p style="font-size: 12px; text-align: center; margin:0;"><?php echo $item->Product_Name; ?></p>
                                         <img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $item->Product_SlNo; ?>' style="height: 50px; width: 100px;" /><br>
-                                        <span style=" margin-top: 5px; text-align: center;"><?php echo $this->session->userdata('Currency_Name') . ' ' . $item->Product_SellingPrice; ?></span>
+                                        <p style="margin:0;margin-top: 5px; text-align: center;"><?php echo $this->session->userdata('Currency_Name') . ' ' . $item->Product_SellingPrice; ?></p>
                                     </div>
                                 </div>
                     <?php }
