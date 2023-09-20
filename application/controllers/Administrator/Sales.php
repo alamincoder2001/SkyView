@@ -211,6 +211,9 @@ class Sales extends CI_Controller
         if (isset($data->customerId) && $data->customerId != '') {
             $clauses .= " and c.Customer_SlNo = '$data->customerId'";
         }
+        if (isset($data->supplierId) && $data->supplierId != '') {
+            $clauses .= " and p.supplierId = '$data->supplierId'";
+        }
 
         if (isset($data->productId) && $data->productId != '') {
             $clauses .= " and p.Product_SlNo = '$data->productId'";
@@ -233,16 +236,19 @@ class Sales extends CI_Controller
                 p.Product_Code,
                 p.Product_Name,
                 p.ProductCategory_ID,
+                p.supplierId,
                 pc.ProductCategory_Name,
                 sm.SaleMaster_InvoiceNo,
                 sm.SaleMaster_SaleDate,
                 c.Customer_Code,
-                c.Customer_Name
+                c.Customer_Name,
+                s.Supplier_Name
             from tbl_saledetails sd
-            join tbl_product p on p.Product_SlNo = sd.Product_IDNo
-            join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
+            left join tbl_product p on p.Product_SlNo = sd.Product_IDNo
+            left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
             join tbl_salesmaster sm on sm.SaleMaster_SlNo = sd.SaleMaster_IDNo
-            join tbl_customer c on c.Customer_SlNo = sm.SalseCustomer_IDNo
+            left join tbl_customer c on c.Customer_SlNo = sm.SalseCustomer_IDNo
+            left join tbl_supplier s on s.Supplier_SlNo = p.supplierId
             where sd.Status != 'd'
             and sm.SaleMaster_branchid = ?
             $clauses
@@ -1889,6 +1895,37 @@ class Sales extends CI_Controller
                 where sd.SaleMaster_IDNo = ?
             ", $sale->SaleMaster_SlNo)->result();
         }
+
+        echo json_encode($sales);
+    }
+    public function getProfitLossBySupplier()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+
+        $clauses = "";
+        if ($data->supplierId != null && $data->supplierId != '') {
+            $clauses .= " and p.supplierId = '$data->supplierId'";
+        }
+
+        if (($data->dateFrom != null && $data->dateFrom != '') && ($data->dateTo != null && $data->dateTo != '')) {
+            $clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
+        }
+
+
+        $sales = $this->db->query("
+                select
+                    sd.*,
+                    p.Product_Code,
+                    p.Product_Name,
+                    p.supplierId,
+                    (sd.Purchase_Rate * sd.SaleDetails_TotalQuantity) as purchased_amount,
+                    (select sd.SaleDetails_TotalAmount - purchased_amount) as profit_loss
+                from tbl_saledetails sd 
+                join tbl_product p on p.Product_SlNo = sd.Product_IDNo
+                left join tbl_salesmaster sm on sm.SaleMaster_SlNo = sd.SaleMaster_IDNo
+                where sd.Status = 'a'
+                $clauses
+            ")->result();
 
         echo json_encode($sales);
     }

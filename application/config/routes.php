@@ -292,6 +292,7 @@ $route['salesreturnlist'] = 'Administrator/Reports/salesreturnlist';
 $route['profitLoss'] = 'Administrator/Sales/profitLoss';
 $route['profitLossSearch'] = 'Administrator/Sales/profitLossSearch';
 $route['get_profit_loss'] = 'Administrator/Sales/getProfitLoss';
+$route['get_profit_loss_bysupplier'] = 'Administrator/Sales/getProfitLossBySupplier';
 $route['profitLossPrint'] = 'Administrator/Reports/profitLossPrint';
 
 $route['customerDue'] = 'Administrator/Customer/customer_due';

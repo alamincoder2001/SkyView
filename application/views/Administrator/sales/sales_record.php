@@ -79,6 +79,7 @@
 					<select class="form-control" v-model="searchType" @change="onChangeSearchType">
 						<option value="">All</option>
 						<option value="customer">By Customer</option>
+						<option value="supplier">By Supplier</option>
 						<option value="employee">By Employee</option>
 						<option value="category">By Category</option>
 						<option value="sub_category">By Sub Category</option>
@@ -92,6 +93,11 @@
 					<v-select v-bind:options="customers" v-model="selectedCustomer" label="display_name"></v-select>
 				</div>
 
+				<div class="form-group" style="display:none;" v-bind:style="{display: searchType == 'supplier' && suppliers.length > 0 ? '' : 'none'}">
+					<label>Supplier</label>
+					<v-select v-bind:options="suppliers" v-model="selectedSupplier" label="display_name"></v-select>
+				</div>
+				
 				<div class="form-group" style="display:none;" v-bind:style="{display: searchType == 'employee' && employees.length > 0 ? '' : 'none'}">
 					<label>Employee</label>
 					<v-select v-bind:options="employees" v-model="selectedEmployee" label="Employee_Name"></v-select>
@@ -294,7 +300,7 @@
 						</tfoot>
 					</table>
 
-					<table class="record-table" v-if="selectedProduct == null">
+					<table class="record-table" v-if="selectedProduct == null && searchType != 'supplier'">
 						<thead>
 							<tr>
 								<th>Product Id</th>
@@ -314,6 +320,39 @@
 								</tr>
 							</template>
 						</tbody>
+					</table>
+
+					<table class="record-table" v-if="searchType == 'supplier'">
+						<thead>
+							<tr>
+								<th>Product Id</th>
+								<th>Product Information</th>
+								<th>SalesRate</th>
+								<th>Quantity</th>
+								<th>Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							<template v-for="sale in sales">
+								<tr>
+									<td colspan="5" style="text-align:center;background: #ccc;">{{ sale.supplier_name }}</td>
+								</tr>
+								<tr v-for="product in sale.products">
+									<td>{{ product.product_code }}</td>
+									<td>{{ product.product_name }}</td>
+									<td style="text-align:right;">{{ product.saleRate }}</td>
+									<td style="text-align:right;">{{ product.quantity }}</td>
+									<td style="text-align:right;">{{ parseFloat(product.saleRate * product.quantity).toFixed(2) }}</td>
+								</tr>
+							</template>
+						</tbody>
+						<tfoot style="background: #0097df;color:#fff;">
+							<tr>
+								<th colspan="3" style="text-align: right;">Total</th>
+								<th style="text-align: right;">{{sales.reduce((acc, pre) => {return acc + +pre.products.reduce((ac, pr) => {return ac + +parseFloat(pr.quantity)},0)},0)}}</th>
+								<th style="text-align: right;">{{sales.reduce((acc, pre) => {return acc + +pre.products.reduce((ac, pr) => {return ac + +(parseFloat(pr.saleRate) * parseFloat(pr.quantity))},0)},0).toFixed(2)}}</th>
+							</tr>
+						</tfoot>
 					</table>
 				</template>
 			</div>
@@ -339,6 +378,8 @@
 				dateTo: moment().format('YYYY-MM-DD'),
 				customers: [],
 				selectedCustomer: null,
+				suppliers: [],
+				selectedSupplier: null,
 				employees: [],
 				selectedEmployee: null,
 				products: [],
@@ -351,7 +392,7 @@
 				selectedSubCategory: null,
 				sales: [],
 				searchTypesForRecord: ['', 'user', 'customer', 'employee'],
-				searchTypesForDetails: ['quantity', 'category', 'sub_category']
+				searchTypesForDetails: ['quantity', 'category', 'sub_category', 'supplier']
 			}
 		},
 		methods: {
@@ -378,6 +419,8 @@
 					this.getCategories();
 				} else if (this.searchType == 'customer') {
 					this.getCustomers();
+				} else if (this.searchType == 'supplier') {
+					this.getSuppliers();
 				} else if (this.searchType == 'employee') {
 					this.getEmployees();
 				}
@@ -390,6 +433,11 @@
 			getCustomers() {
 				axios.get('/get_customers').then(res => {
 					this.customers = res.data;
+				})
+			},
+			getSuppliers() {
+				axios.get('/get_suppliers').then(res => {
+					this.suppliers = res.data;
 				})
 			},
 			getEmployees() {
@@ -434,6 +482,10 @@
 					this.selectedProduct = null;
 				}
 
+				if (this.searchType != 'supplier') {
+					this.selectedSupplier = null;
+				}
+
 				if (this.searchType != 'category' && this.searchType != 'sub_category') {
 					this.selectedCategory = null;
 				}
@@ -470,17 +522,13 @@
 							this.sales = res.data.sales;
 						}
 					})
-					.catch(error => {
-						if (error.response) {
-							alert(`${error.response.status}, ${error.response.statusText}`);
-						}
-					})
 			},
 			getSaleDetails() {
 				let filter = {
 					categoryId: this.selectedCategory == null || this.selectedCategory.ProductCategory_SlNo == '' ? '' : this.selectedCategory.ProductCategory_SlNo,
 					subCategoryId: this.selectedSubCategory == null || this.selectedSubCategory.SubCat_ID == '' ? '' : this.selectedSubCategory.SubCat_ID,
 					productId: this.selectedProduct == null || this.selectedProduct.Product_SlNo == '' ? '' : this.selectedProduct.Product_SlNo,
+					supplierId: this.selectedSupplier == null || this.selectedSupplier.Supplier_SlNo == '' ? '' : this.selectedSupplier.Supplier_SlNo,
 					dateFrom: this.dateFrom,
 					dateTo: this.dateTo
 				}
@@ -489,7 +537,7 @@
 					.then(res => {
 						let sales = res.data;
 
-						if (this.selectedProduct == null) {
+						if (this.selectedProduct == null && this.searchType != 'supplier') {
 							sales = _.chain(sales)
 								.groupBy('ProductCategory_ID')
 								.map(sale => {
@@ -509,12 +557,29 @@
 								})
 								.value();
 						}
-						this.sales = sales;
-					})
-					.catch(error => {
-						if (error.response) {
-							alert(`${error.response.status}, ${error.response.statusText}`);
+						if (this.searchType == 'supplier') {
+							sales = _.chain(sales)
+								.groupBy('supplierId')
+								.map(sale => {
+									return {
+										supplier_name: sale[0].Supplier_Name,
+										products: _.chain(sale)
+											.groupBy('Product_IDNo')
+											.map(product => {
+												return {
+													product_code: product[0].Product_Code,
+													product_name: product[0].Product_Name,
+													quantity: _.sumBy(product, item => Number(item.SaleDetails_TotalQuantity)),
+													saleRate: product[0].SaleDetails_Rate,
+													purchaseRate: product[0].Purchase_Rate
+												}
+											})
+											.value()
+									}
+								})
+								.value();
 						}
+						this.sales = sales;
 					})
 			},
 			deleteSale(saleId) {
