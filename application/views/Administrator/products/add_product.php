@@ -189,6 +189,7 @@
 						<tr>
 							<td>{{ row.Product_Code }}</td>
 							<td>{{ row.Product_Name }}</td>
+							<td>{{ row.Supplier_Name }}</td>
 							<td>{{ row.ProductCategory_Name }}</td>
 							<td>{{ row.Product_Purchase_Rate }}</td>
 							<td>{{ row.Product_SellingPrice }}</td>
@@ -238,6 +239,7 @@
 					Product_Name: '',
 					ProductCategory_ID: '',
 					ProductSubCategory_ID: '',
+					supplierId: '',
 					brand: '',
 					Product_ReOrederLevel: 0,
 					Product_Purchase_Rate: 0,
@@ -278,6 +280,11 @@
 					{
 						label: 'Product Name',
 						field: 'Product_Name',
+						align: 'center'
+					},
+					{
+						label: 'Supplier Name',
+						field: 'Supplier_Name',
 						align: 'center'
 					},
 					{

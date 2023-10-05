@@ -110,12 +110,12 @@ class Products extends CI_Controller
         try {
             $productObj = json_decode($this->input->raw_input_stream);
 
-            $productNameCount = $this->db->query("select * from tbl_product where Product_Name = ? and Product_SlNo != ?", [$productObj->Product_Name, $productObj->Product_SlNo])->num_rows();
-            if ($productNameCount > 0) {
-                $res = ['success' => false, 'message' => 'Product name already exists'];
-                echo json_encode($res);
-                exit;
-            }
+            // $productNameCount = $this->db->query("select * from tbl_product where Product_Name = ? and Product_SlNo != ?", [$productObj->Product_Name, $productObj->Product_SlNo])->num_rows();
+            // if ($productNameCount > 0) {
+            //     $res = ['success' => false, 'message' => 'Product name already exists'];
+            //     echo json_encode($res);
+            //     exit;
+            // }
 
             $productCodeCount = $this->db->query("select * from tbl_product where Product_Code = ? and Product_SlNo != ?", [$productObj->Product_Code, $productObj->Product_SlNo])->num_rows();
             if ($productCodeCount > 0) {

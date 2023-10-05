@@ -423,7 +423,7 @@
 		async created(){
 			await this.getSuppliers();
 			this.getBranches();
-			this.getProducts();
+			// this.getProducts();
 
 			if(this.purchase.purchaseId != 0){
 				await this.getPurchase();
@@ -451,7 +451,7 @@
 			},
 			getProducts(){
 				axios.post('/get_products', {isService: 'false'}).then(res=>{
-					this.products = res.data;
+					this.products = res.data.filter(prod => prod.supplierId == this.selectedSupplier.Supplier_SlNo);
 				})
 			},
 			onChangeSupplier(){
@@ -480,6 +480,8 @@
 						this.purchase.previousDue = 0;
 					}
 				})
+
+				this.getProducts();
 
 				this.calculateTotal();
 			},
