@@ -5,15 +5,23 @@
     <title>Barcode Generator</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
-        /* .article {
-            min-height: 90px;
-            max-height: 100px;
-            width: 15px;
-            float: left;
-            writing-mode: tb-rl;
-        } */
+        /* .article {*/
+        /*    min-height: 90px;*/
+        /*    max-height: 100px;*/
+        /*    width: 15px;*/
+        /*    float: left;*/
+        /*    writing-mode: tb-rl;*/
+        /*} */
+        
+        @media print{
+			body{
+				margin: 0;
+				padding: 0px !important;
+			}
+		}
 
         .article {
+            margin:0;
 			min-height: 95px;
 			float: left;
 			writing-mode: tb-rl;
@@ -133,11 +141,11 @@
                                 if (isset($kode)) : echo $kode;
                                 endif;
                     ?>
-                                <div style="padding:4px;float: left; height: 104.8px; width: 136px; border: 1px solid #ddd;">
-                                    <div style="width: 136px; text-align: center; float: right;">
+                                <div style="padding:2.5px 3px;float: left; height: 104.72px; width: 135.3px; border: 1px solid #ddd;">
+                                    <div style="width: 134.5px; text-align: center; float: right;">
                                         <p class="article" style="font-size: 12px;"><?php echo $article; ?></p>
                                         <p style="font-size: 12px; text-align: center; margin:1px 0;line-height: 1;"><?php echo $item->Product_Name; ?></p>
-                                        <img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $item->Product_SlNo; ?>' style="height: 50px; width: 110px;" /><br>
+                                        <img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $item->Product_SlNo; ?>' style="height: 50px; width: 108px;" /><br>
                                         <p style="margin:0;text-align: center;"><?php echo $this->session->userdata('Currency_Name') . ' ' . $item->Product_SellingPrice; ?></p>
                                     </div>
                                 </div>
