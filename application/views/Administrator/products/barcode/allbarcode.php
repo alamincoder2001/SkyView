@@ -5,13 +5,21 @@
     <title>Barcode Generator</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
-        .article {
+        /* .article {
             min-height: 90px;
             max-height: 100px;
             width: 15px;
             float: left;
             writing-mode: tb-rl;
-        }
+        } */
+
+        .article {
+			min-height: 95px;
+			float: left;
+			writing-mode: tb-rl;
+			margin-left: 10px;
+			line-height: 1;
+		}
 
         .content {
             width: 120px;
@@ -127,9 +135,9 @@
                     ?>
                                 <div style="padding:4px;float: left; height: 104.8px; width: 136px; border: 1px solid #ddd;">
                                     <div style="width: 136px; text-align: center; float: right;">
-                                        <span class="article" style="font-size: 12px;"><?php echo $article; ?></span>
+                                        <p class="article" style="font-size: 12px;"><?php echo $article; ?></p>
                                         <p style="font-size: 12px; text-align: center; margin:1px 0;line-height: 1;"><?php echo $item->Product_Name; ?></p>
-                                        <img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $item->Product_SlNo; ?>' style="height: 50px; width: 100px;" /><br>
+                                        <img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $item->Product_SlNo; ?>' style="height: 50px; width: 110px;" /><br>
                                         <p style="margin:0;text-align: center;"><?php echo $this->session->userdata('Currency_Name') . ' ' . $item->Product_SellingPrice; ?></p>
                                     </div>
                                 </div>
