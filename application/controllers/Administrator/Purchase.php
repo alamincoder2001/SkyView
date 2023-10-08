@@ -1041,7 +1041,9 @@ class Purchase extends CI_Controller
             $purchase->purchaseDetails = $this->db->query("
                 select 
                     pd.*,
+                    p.Product_Code,
                     p.Product_Name,
+                    p.Product_SellingPrice,
                     pc.ProductCategory_Name
                 from tbl_purchasedetails pd
                 join tbl_product p on p.Product_SlNo = pd.Product_IDNo

@@ -39,23 +39,36 @@ const purchaseInvoice = Vue.component('purchase-invoice', {
                             <thead>
                                 <tr>
                                     <td>Sl.</td>
+                                    <td>Code</td>
                                     <td>Description</td>
                                     <td>Qnty</td>
                                     <td>Unit</td>
-                                    <td>Unit Price</td>
-                                    <td>Total</td>
+                                    <td>Purchase Price</td>
+                                    <td>Sales Price</td>
+                                    <td>SalesTotal</td>
+                                    <td>PurchaseTotal</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(product, sl) in cart">
                                     <td>{{ sl + 1 }}</td>
+                                    <td>{{ product.Product_Code }}</td>
                                     <td>{{ product.Product_Name }}</td>
                                     <td>{{ product.PurchaseDetails_TotalQuantity }}</td>
                                     <td>{{ product.Unit_Name }}</td>
+                                    <td>{{ product.Product_SellingPrice }}</td>
                                     <td>{{ product.PurchaseDetails_Rate }}</td>
+                                    <td align="right">{{ parseFloat(product.Product_SellingPrice * product.PurchaseDetails_TotalQuantity).toFixed(2) }}</td>
                                     <td align="right">{{ product.PurchaseDetails_TotalAmount }}</td>
                                 </tr>
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="7">Total</td>
+                                    <td align="right">{{cart.reduce((acc, pre) => {return acc + parseFloat(pre.PurchaseDetails_TotalAmount)},0).toFixed(2)}}</td>
+                                    <td align="right">{{cart.reduce((acc, pre) => {return acc + parseFloat(pre.Product_SellingPrice * pre.PurchaseDetails_TotalQuantity)},0).toFixed(2)}}</td>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>

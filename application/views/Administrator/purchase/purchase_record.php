@@ -140,11 +140,14 @@
 							<th>Invoice No.</th>
 							<th>Date</th>
 							<th>Supplier Name</th>
+							<th>Product Code</th>
 							<th>Product Name</th>
-							<th>Price</th>
+							<th>Sales Price</th>
+							<th>Purchase Price</th>
 							<th>Quantity</th>
-							<th>Total</th>
-							<th>Action</th>
+							<th>SalesTotal</th>
+							<th>PurchaseTotal</th>
+							<th style="width:10%;">Action</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -153,9 +156,12 @@
 								<td>{{ purchase.PurchaseMaster_InvoiceNo }}</td>
 								<td>{{ purchase.PurchaseMaster_OrderDate }}</td>
 								<td>{{ purchase.Supplier_Name }}</td>
+								<td>{{ purchase.purchaseDetails[0].Product_Code }}</td>
 								<td>{{ purchase.purchaseDetails[0].Product_Name }}</td>
-								<td style="text-align:right;">{{ purchase.purchaseDetails[0].PurchaseDetails_Rate }}</td>
+								<td style="text-align:center;">{{ purchase.purchaseDetails[0].Product_SellingPrice }}</td>
+								<td style="text-align:center;">{{ purchase.purchaseDetails[0].PurchaseDetails_Rate }}</td>
 								<td style="text-align:center;">{{ purchase.purchaseDetails[0].PurchaseDetails_TotalQuantity }}</td>
+								<td style="text-align:right;">{{ parseFloat(purchase.purchaseDetails[0].Product_SellingPrice * purchase.purchaseDetails[0].PurchaseDetails_TotalQuantity).toFixed(2) }}</td>
 								<td style="text-align:right;">{{ purchase.purchaseDetails[0].PurchaseDetails_TotalAmount }}</td>
 								<td style="text-align:center;">
 									<button type="button" class="button" @click="window.location = `/Administrator/products/purchasewisebarcodeGenerate/${purchase.PurchaseMaster_SlNo}`">
@@ -170,21 +176,25 @@
 							</tr>
 							<tr v-for="(product, sl) in purchase.purchaseDetails.slice(1)">
 								<td colspan="3" v-bind:rowspan="purchase.purchaseDetails.length - 1" v-if="sl == 0"></td>
+								<td>{{ product.Product_Code }}</td>
 								<td>{{ product.Product_Name }}</td>
-								<td style="text-align:right;">{{ product.PurchaseDetails_Rate }}</td>
+								<td style="text-align:center;">{{ product.Product_SellingPrice }}</td>
+								<td style="text-align:center;">{{ product.PurchaseDetails_Rate }}</td>
 								<td style="text-align:center;">{{ product.PurchaseDetails_TotalQuantity }}</td>
+								<td style="text-align:right;">{{ parseFloat(product.Product_SellingPrice * product.PurchaseDetails_TotalQuantity).toFixed(2) }}</td>
 								<td style="text-align:right;">{{ product.PurchaseDetails_TotalAmount }}</td>
 								<td></td>
 							</tr>
 							<tr style="font-weight:bold;">
-								<td colspan="5" style="font-weight:normal;"><strong>Note: </strong>{{ purchase.PurchaseMaster_Description }}</td>
-								<td style="text-align:center;">Total Quantity<br>{{ purchase.purchaseDetails.reduce((prev, curr) => {return prev + parseFloat(curr.PurchaseDetails_TotalQuantity)}, 0) }}</td>
+								<td colspan="7" style="font-weight:normal;"><strong>Note: </strong>{{ purchase.PurchaseMaster_Description }}</td>
+								<td style="text-align:center;">Total<br>{{ purchase.purchaseDetails.reduce((prev, curr) => {return prev + parseFloat(curr.PurchaseDetails_TotalQuantity)}, 0) }}</td>
+								<td style="text-align:center;">Total<br>{{ purchase.purchaseDetails.reduce((prev, curr) => {return prev + parseFloat(curr.Product_SellingPrice * curr.PurchaseDetails_TotalQuantity)}, 0).toFixed(2) }}</td>
+								<td style="text-align:center;">Total<br>{{ purchase.purchaseDetails.reduce((prev, curr) => {return prev + parseFloat(curr.PurchaseDetails_TotalAmount)}, 0).toFixed(2) }}</td>
 								<td style="text-align:right;">
 									Total: {{ purchase.PurchaseMaster_TotalAmount }}<br>
 									Paid: {{ purchase.PurchaseMaster_PaidAmount }}<br>
 									Due: {{ purchase.PurchaseMaster_DueAmount }}
 								</td>
-								<td></td>
 							</tr>
 						</template>
 					</tbody>

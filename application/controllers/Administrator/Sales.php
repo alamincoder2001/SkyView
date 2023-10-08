@@ -306,6 +306,7 @@ class Sales extends CI_Controller
             $sale->saleDetails = $this->db->query("
                 select 
                     sd.*,
+                    p.Product_Code,
                     p.Product_Name,
                     pc.ProductCategory_Name
                 from tbl_saledetails sd

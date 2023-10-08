@@ -177,6 +177,9 @@ class Products extends CI_Controller
         if (isset($data->categoryId) && $data->categoryId != '') {
             $clauses .= " and p.ProductCategory_ID = '$data->categoryId'";
         }
+        if (isset($data->supplierId) && $data->supplierId != '') {
+            $clauses .= " and p.supplierId = '$data->supplierId'";
+        }
 
         if (isset($data->isService) && $data->isService != null && $data->isService != '') {
             $clauses .= " and p.is_service = '$data->isService'";
@@ -241,6 +244,9 @@ class Products extends CI_Controller
         $clauses = "";
         if (isset($data->categoryId) && $data->categoryId != null) {
             $clauses .= " and p.ProductCategory_ID = '$data->categoryId'";
+        }
+        if (isset($data->supplierId) && $data->supplierId != null) {
+            $clauses .= " and p.supplierId = '$data->supplierId'";
         }
 
         if (isset($data->productId) && $data->productId != null) {
