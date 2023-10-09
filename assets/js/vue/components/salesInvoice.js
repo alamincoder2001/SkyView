@@ -400,31 +400,24 @@ const salesInvoice = Vue.component('sales-invoice', {
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <div class="row">
-                                                <div class="col-xs-12">
-                                                    ${invoiceContent}
+                                            ${invoiceContent}
+                                            <div class="row" style="border-bottom:1px solid #ccc;margin-bottom:5px;padding-bottom:6px;">
+                                                <div class="col-xs-6">
+                                                    <span style="text-decoration:overline;">Received by</span><br><br>
+                                                    ** THANK YOU FOR YOUR BUSINESS **
+                                                </div>
+                                                <div class="col-xs-6 text-right">
+                                                    <span style="text-decoration:overline;">Authorized by</span>
                                                 </div>
                                             </div>
                                         </td>
                                     </tr>
                                 </tbody>
                                 <tfoot>
-                                    <tr>
-                                        <td>
-                                            <div style="width:100%;height:50px;">&nbsp;</div>
-                                        </td>
+                                    <tr style="width:100%;height:50px;">
                                     </tr>
                                 </tfoot>
                             </table>
-                            <div class="row" style="border-bottom:1px solid #ccc;margin-bottom:5px;padding-bottom:6px;">
-                                <div class="col-xs-6">
-                                    <span style="text-decoration:overline;">Received by</span><br><br>
-                                    ** THANK YOU FOR YOUR BUSINESS **
-                                </div>
-                                <div class="col-xs-6 text-right">
-                                    <span style="text-decoration:overline;">Authorized by</span>
-                                </div>
-                            </div>
                             <div style="position:fixed;left:0;bottom:15px;width:100%;">
                                 <div class="row" style="font-size:12px;">
                                     <div class="col-xs-6">
