@@ -395,9 +395,8 @@ class Supplier extends CI_Controller {
             from tbl_supplier
             where Status = 'a'
             and Supplier_Type != 'G'
-            and Supplier_brinchid = ? or Supplier_brinchid = 0
             order by Supplier_SlNo desc
-        ", $this->session->userdata('BRANCHid'))->result();
+        ")->result();
 
         echo json_encode($suppliers);
     }
@@ -431,6 +430,7 @@ class Supplier extends CI_Controller {
                 0.00 as balance
             from tbl_purchasemaster pm
             where pm.Supplier_SlNo = '$data->supplierId'
+            and pm.PurchaseMaster_BranchID = '$this->brunch'
             and pm.status = 'a'
             
             UNION
@@ -454,6 +454,7 @@ class Supplier extends CI_Controller {
             left join tbl_bank_accounts ba on ba.account_id = sp.account_id
             where sp.SPayment_customerID = '$data->supplierId'
             and sp.SPayment_TransactionType = 'CP'
+            and sp.SPayment_brunchid = '$this->brunch'
             and sp.SPayment_status = 'a'
             
             UNION
@@ -477,6 +478,7 @@ class Supplier extends CI_Controller {
             left join tbl_bank_accounts ba on ba.account_id = sp2.account_id
             where sp2.SPayment_customerID = '$data->supplierId'
             and sp2.SPayment_TransactionType = 'CR'
+            and sp2.SPayment_brunchid = '$this->brunch'
             and sp2.SPayment_status = 'a'
             
             UNION
@@ -493,6 +495,7 @@ class Supplier extends CI_Controller {
                 0.00 as balance
             from tbl_purchasereturn pr
             where pr.Supplier_IDdNo = '$data->supplierId'
+            and pr.PurchaseReturn_brunchID = '$this->brunch'
             
             order by date, sequence, id
         ")->result();

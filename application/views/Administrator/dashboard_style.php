@@ -133,7 +133,7 @@
 	
 </style>
 
-<?php $branch_id = $this->session->userdata('BRANCHid'); if($branch_id == 1){ ?>
+<?php $branch_id = $this->session->userdata('BRANCHid'); if($branch_id == 2){ ?>
 <style>
 	.section12 , .section20{
 		background: #a8ff78;  /* fallback for old browsers */
@@ -144,7 +144,7 @@ background: linear-gradient(to right, #78ffd6, #a8ff78); /* W3C, IE 10+/ Edge, F
 	}
 	
 </style>
-<?php } elseif($branch_id == 2){?>
+<?php } elseif($branch_id == 1){?>
 <style>
 	.section12 , .section20{
 		background: #FC5C7D;  /* fallback for old browsers */

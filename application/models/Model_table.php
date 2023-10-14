@@ -586,32 +586,32 @@ class Model_Table extends CI_Model{
             (select (ifnull(sum(pm.PurchaseMaster_TotalAmount), 0.00) + ifnull(s.previous_due, 0.00)) from tbl_purchasemaster pm
                 where pm.Supplier_SlNo = s.Supplier_SlNo
                 " . ($date == null ? "" : " and pm.PurchaseMaster_OrderDate < '$date'") . "
-                and pm.status = 'a'
+                and pm.status = 'a' and pm.PurchaseMaster_BranchID = '$branchId'
             ) as bill,
 
             (select ifnull(sum(pm2.PurchaseMaster_PaidAmount), 0.00) from tbl_purchasemaster pm2
                 where pm2.Supplier_SlNo = s.Supplier_SlNo
                 " . ($date == null ? "" : " and pm2.PurchaseMaster_OrderDate < '$date'") . "
-                and pm2.status = 'a'
+                and pm2.status = 'a' and pm2.PurchaseMaster_BranchID = '$branchId'
             ) as invoicePaid,
 
             (select ifnull(sum(sp.SPayment_amount), 0.00) from tbl_supplier_payment sp 
                 where sp.SPayment_customerID = s.Supplier_SlNo 
                 and sp.SPayment_TransactionType = 'CP'
                 " . ($date == null ? "" : " and sp.SPayment_date < '$date'") . "
-                and sp.SPayment_status = 'a'
+                and sp.SPayment_status = 'a' and sp.SPayment_brunchid = '$branchId'
             ) as cashPaid,
                 
             (select ifnull(sum(sp2.SPayment_amount), 0.00) from tbl_supplier_payment sp2 
                 where sp2.SPayment_customerID = s.Supplier_SlNo 
                 and sp2.SPayment_TransactionType = 'CR'
                 " . ($date == null ? "" : " and sp2.SPayment_date < '$date'") . "
-                and sp2.SPayment_status = 'a'
+                and sp2.SPayment_status = 'a' and sp2.SPayment_brunchid = '$branchId'
             ) as cashReceived,
 
             (select ifnull(sum(pr.PurchaseReturn_ReturnAmount), 0.00) from tbl_purchasereturn pr
                 join tbl_purchasemaster rpm on rpm.PurchaseMaster_InvoiceNo = pr.PurchaseMaster_InvoiceNo
-                where rpm.Supplier_SlNo = s.Supplier_SlNo
+                where rpm.Supplier_SlNo = s.Supplier_SlNo and pr.PurchaseReturn_brunchID = '$branchId'
                 " . ($date == null ? "" : " and pr.PurchaseReturn_ReturnDate < '$date'") . "
             ) as returned,
             
@@ -620,7 +620,7 @@ class Model_Table extends CI_Model{
             (select (bill + cashReceived) - (paid + returned)) as due
 
             from tbl_supplier s
-            where s.Supplier_brinchid = '$branchId' $clauses
+            where s.Status = 'a' $clauses
         ")->result();
 
         return $supplierDues;
