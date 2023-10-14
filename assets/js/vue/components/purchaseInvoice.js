@@ -50,7 +50,7 @@ const purchaseInvoice = Vue.component("purchase-invoice", {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(product, sl) in cart">
+                                <tr v-for="(product, sl) in cart" v-if="cart.length > 10">
                                     <td>{{ sl + 1 }}</td>
                                     <td>{{ product.Product_Code }}</td>
                                     <td align="left">{{ product.Product_Name }}</td>
@@ -61,21 +61,20 @@ const purchaseInvoice = Vue.component("purchase-invoice", {
                                     <td align="right">{{ parseFloat(product.Product_SellingPrice * product.PurchaseDetails_TotalQuantity).toFixed(2) }}</td>
                                     <td align="right">{{ product.PurchaseDetails_TotalAmount }}</td>
                                 </tr>
-                            </tbody>
-                            <tfoot>
                                 <tr>
-                                    <td colspan="7">Total</td>
+                                    <td colspan="3">Total</td>
+                                    <td align="center">{{cart.reduce((acc, pre) => {return acc + parseFloat(pre.PurchaseDetails_TotalQuantity)},0)}}</td>
+                                    <td colspan="3"></td>
                                     <td align="right">{{cart.reduce((acc, pre) => {return acc + parseFloat(pre.Product_SellingPrice * pre.PurchaseDetails_TotalQuantity)},0).toFixed(2)}}</td>
                                     <td align="right">{{cart.reduce((acc, pre) => {return acc + parseFloat(pre.PurchaseDetails_TotalAmount)},0).toFixed(2)}}</td>
                                 </tr>
-                            </tfoot>
+                            </tbody>
                         </table>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-6">
-                        <br>
-                        <table class="pull-left">
+                        <table class="pull-left" style="margin-top:35px;">
                             <tr>
                                 <td><strong>Previous Due:</strong></td>
                                 
@@ -130,22 +129,11 @@ const purchaseInvoice = Vue.component("purchase-invoice", {
                             </tr>
                         </table>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-xs-12">
                         <strong>In Word: </strong> {{ convertNumberToWords(purchase.PurchaseMaster_TotalAmount) }}<br><br>
                         <strong>Note: </strong>
                         <p style="white-space: pre-line">{{ purchase.PurchaseMaster_Description }}</p>
                     </div>
-                </div>
-                <div class="row" style="border-bottom:1px solid #ccc;margin-bottom:5px;padding-bottom:6px;">
-                    <div class="col-xs-6">
-                        <span style="text-decoration:overline;">Received by</span><br>
-                        ** THANK YOU FOR YOUR BUSINESS **
-                    </div>
-                    <div class="col-xs-6 text-right">
-                        <span style="text-decoration:overline;">Authorized Signature</span>
-                    </div>                           
                 </div>
             </div>
         </div>
@@ -352,58 +340,44 @@ const purchaseInvoice = Vue.component("purchase-invoice", {
                     </style>
                 </head>
                 <body>
-                    <div class="container">
+                      <div class="container">
+                        <div style="position:absolute;top:0;width:100%;">
+                            <div class="row">
+                                <div class="col-xs-2"><img src="/uploads/company_profile_thum/${this.currentBranch.Company_Logo_thum}" alt="Logo" style="height:80px;" /></div>
+                                <div class="col-xs-10" style="">
+                                    <strong style="font-size:18px;">${this.currentBranch.Company_Name}</strong><br>
+                                    <p style="white-space:pre-line;">${this.currentBranch.Repot_Heading}</p>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div style="border-bottom: 4px double #454545;margin-top:0px;margin-bottom:7px;"></div>
+                                </div>
+                            </div>
+                        </div>
                         <table style="width:100%;">
                             <thead>
                                 <tr>
-                                    <td>
-                                        <div>
-                                            <div class="row">
-                                                <div class="col-xs-2"><img src="/uploads/company_profile_thum/${
-                                                  this.currentBranch
-                                                    .Company_Logo_thum
-                                                }" alt="Logo" style="height:80px;" /></div>
-                                                <div class="col-xs-10" style="padding-top:20px;">
-                                                    <strong style="font-size:18px;">${
-                                                      this.currentBranch
-                                                        .Company_Name
-                                                    }</strong><br>
-                                                    <p style="white-space:pre-line;">${
-                                                      this.currentBranch
-                                                        .Repot_Heading
-                                                    }</p>
-                                                </div>
-                                                <div class="col-xs-12">
-                                                    <div style="border-bottom: 4px double #454545;margin-top:7px;margin-bottom:7px;"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <td style="height:120px;"></td>
                                 </tr>
                             <thead>
                             <tbody>
                                 <tr>
                                     <td>${invoiceContent}</td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                      <div class="row" style="margin-top:35px;">
+                                          <div class="col-xs-6">
+                                              <span style="text-decoration:overline;">Received by</span>
+                                          </div>
+                                          <div class="col-xs-6 text-right">
+                                              <span style="text-decoration:overline;">Authorized Signature</span>
+                                          </div>                           
+                                      </div>
+                                    </td>
+                                </tr>
                             </tbody>
-
-                            <tfoot>
-                                <tr style="height:20px;"></tr>
-                            </tfoot>
                         </table>
-                    </div>
-                    <div style="position:fixed;bottom:0px;width:100%;">
-                        <div class="row">
-                            <div class="col-xs-5" style="padding-right:0px;">
-                                Print Date: ${moment().format(
-                                  "DD-MM-YYYY h:mm a"
-                                )}, Printed by: ${this.purchase.AddBy}
-                            </div>
-                            <div class="col-xs-7 text-right">
-                                Developed by: Link-Up Technologoy, Contact no: 01911978897
-                            </div> 
-                        </div>
-                    </div>
+                      </div>
                 </body>
                 </html>
             `);
