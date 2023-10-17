@@ -134,7 +134,7 @@
 		</div>
 		<div class="col-md-12">
 			<div class="table-responsive" id="reportContent">
-				<table class="record-table" v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'with_details'" style="display:none" v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'with_details' ? '' : 'none'}">
+				<table class="record-table" v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'with_details' && searchType != 'supplier'" style="display:none" v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'with_details' && searchType != 'supplier' ? '' : 'none'}">
 					<thead>
 						<tr>
 							<th>Invoice No.</th>
@@ -199,8 +199,78 @@
 						</template>
 					</tbody>
 				</table>
+				<table class="record-table" v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'with_details' && searchType == 'supplier'" style="display:none" v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'with_details' && searchType == 'supplier' ? '' : 'none'}">
+					<thead>
+						<tr>
+							<th>Invoice No.</th>
+							<th>Date</th>
+							<th>Supplier Name</th>
+							<th>Product Code</th>
+							<th>Product Name</th>
+							<th>Sales Price</th>
+							<th>Purchase Price</th>
+							<th>Quantity</th>
+							<th>SalesTotal</th>
+							<th>PurchaseTotal</th>
+							<th style="width:10%;">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<template v-for="item in purchases">
+							<tr>
+								<td align="center" colspan="11" style="background: gray;font-weight: 900;color: white;">{{item.Supplier_Name}}</td>
+							</tr>
+							<template v-for="purchase in item.purchase">
+								<tr>
+									<td>{{ purchase.PurchaseMaster_InvoiceNo }}</td>
+									<td>{{ purchase.PurchaseMaster_OrderDate }}</td>
+									<td>{{ purchase.Supplier_Name }}</td>
+									<td>{{ purchase.purchaseDetails[0].Product_Code }}</td>
+									<td>{{ purchase.purchaseDetails[0].Product_Name }}</td>
+									<td style="text-align:center;">{{ purchase.purchaseDetails[0].Product_SellingPrice }}</td>
+									<td style="text-align:center;">{{ purchase.purchaseDetails[0].PurchaseDetails_Rate }}</td>
+									<td style="text-align:center;">{{ purchase.purchaseDetails[0].PurchaseDetails_TotalQuantity }}</td>
+									<td style="text-align:right;">{{ parseFloat(purchase.purchaseDetails[0].Product_SellingPrice * purchase.purchaseDetails[0].PurchaseDetails_TotalQuantity).toFixed(2) }}</td>
+									<td style="text-align:right;">{{ purchase.purchaseDetails[0].PurchaseDetails_TotalAmount }}</td>
+									<td style="text-align:center;">
+										<button type="button" class="button" @click="window.location = `/Administrator/products/purchasewisebarcodeGenerate/${purchase.PurchaseMaster_SlNo}`">
+											<i class="fa fa-barcode"></i>
+										</button>
+										<a href="" title="Purchase Invoice" v-bind:href="`/purchase_invoice_print/${purchase.PurchaseMaster_SlNo}`" target="_blank"><i class="fa fa-file-text"></i></a>
+										<?php if ($this->session->userdata('accountType') != 'u') { ?>
+											<a href="javascript:" title="Edit Purchase" @click="checkReturnAndEdit(purchase)"><i class="fa fa-edit"></i></a>
+											<a href="" title="Delete Purchase" @click.prevent="deletePurchase(purchase.PurchaseMaster_SlNo)"><i class="fa fa-trash"></i></a>
+										<?php } ?>
+									</td>
+								</tr>
+								<tr v-for="(product, sl) in purchase.purchaseDetails.slice(1)">
+									<td colspan="3" v-bind:rowspan="purchase.purchaseDetails.length - 1" v-if="sl == 0"></td>
+									<td>{{ product.Product_Code }}</td>
+									<td>{{ product.Product_Name }}</td>
+									<td style="text-align:center;">{{ product.Product_SellingPrice }}</td>
+									<td style="text-align:center;">{{ product.PurchaseDetails_Rate }}</td>
+									<td style="text-align:center;">{{ product.PurchaseDetails_TotalQuantity }}</td>
+									<td style="text-align:right;">{{ parseFloat(product.Product_SellingPrice * product.PurchaseDetails_TotalQuantity).toFixed(2) }}</td>
+									<td style="text-align:right;">{{ product.PurchaseDetails_TotalAmount }}</td>
+									<td></td>
+								</tr>
+								<tr style="font-weight:bold;">
+									<td colspan="7" style="font-weight:normal;"><strong>Note: </strong>{{ purchase.PurchaseMaster_Description }}</td>
+									<td style="text-align:center;">Total<br>{{ purchase.purchaseDetails.reduce((prev, curr) => {return prev + parseFloat(curr.PurchaseDetails_TotalQuantity)}, 0) }}</td>
+									<td style="text-align:center;">Total<br>{{ purchase.purchaseDetails.reduce((prev, curr) => {return prev + parseFloat(curr.Product_SellingPrice * curr.PurchaseDetails_TotalQuantity)}, 0).toFixed(2) }}</td>
+									<td style="text-align:center;">Total<br>{{ purchase.purchaseDetails.reduce((prev, curr) => {return prev + parseFloat(curr.PurchaseDetails_TotalAmount)}, 0).toFixed(2) }}</td>
+									<td style="text-align:right;">
+										Total: {{ purchase.PurchaseMaster_TotalAmount }}<br>
+										Paid: {{ purchase.PurchaseMaster_PaidAmount }}<br>
+										Due: {{ purchase.PurchaseMaster_DueAmount }}
+									</td>
+								</tr>
+							</template>
+						</template>
+					</tbody>
+				</table>
 
-				<table class="record-table" v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'without_details'" style="display:none" v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'without_details' ? '' : 'none'}">
+				<table class="record-table" v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'without_details' && searchType != 'supplier'" style="display:none" v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'without_details' && searchType != 'supplier' ? '' : 'none'}">
 					<thead>
 						<tr>
 							<th>Invoice No.</th>
@@ -254,6 +324,65 @@
 						</tr>
 					</tfoot>
 				</table>
+				<table class="record-table" v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'without_details' && searchType == 'supplier'" style="display:none" v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'without_details' && searchType == 'supplier' ? '' : 'none'}">
+					<thead>
+						<tr>
+							<th>Invoice No.</th>
+							<th>Date</th>
+							<th>Supplier Name</th>
+							<th>Sub Total</th>
+							<th>VAT</th>
+							<th>Discount</th>
+							<th>Transport Cost</th>
+							<th>Total</th>
+							<th>Paid</th>
+							<th>Due</th>
+							<th>Note</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<template v-for="item in purchases">
+							<tr>
+								<td colspan="12" align="center" style="background: gray;font-weight: 900;color: white;">{{item.Supplier_Name}}</td>
+							</tr>
+							<tr v-for="purchase in item.purchase">
+								<td>{{ purchase.PurchaseMaster_InvoiceNo }}</td>
+								<td>{{ purchase.PurchaseMaster_OrderDate }}</td>
+								<td>{{ purchase.Supplier_Name }}</td>
+								<td style="text-align:right;">{{ purchase.PurchaseMaster_SubTotalAmount }}</td>
+								<td style="text-align:right;">{{ purchase.PurchaseMaster_Tax }}</td>
+								<td style="text-align:right;">{{ purchase.PurchaseMaster_DiscountAmount }}</td>
+								<td style="text-align:right;">{{ purchase.PurchaseMaster_Freight }}</td>
+								<td style="text-align:right;">{{ purchase.PurchaseMaster_TotalAmount }}</td>
+								<td style="text-align:right;">{{ purchase.PurchaseMaster_PaidAmount }}</td>
+								<td style="text-align:right;">{{ purchase.PurchaseMaster_DueAmount }}</td>
+								<td style="text-align:left;">{{ purchase.PurchaseMaster_Description }}</td>
+								<td style="text-align:center;">
+									<a href="" title="Purchase Invoice" v-bind:href="`/purchase_invoice_print/${purchase.PurchaseMaster_SlNo}`" target="_blank"><i class="fa fa-file-text"></i></a>
+									<?php if ($this->session->userdata('accountType') != 'u') { ?>
+										<a href="javascript:" title="Edit Purchase" @click="checkReturnAndEdit(purchase)"><i class="fa fa-edit"></i></a>
+										<a href="" title="Delete Purchase" @click.prevent="deletePurchase(purchase.PurchaseMaster_SlNo)"><i class="fa fa-trash"></i></a>
+									<?php } ?>
+								</td>
+							</tr>
+						</template>
+					</tbody>
+					<tfoot>
+						<tr style="font-weight:bold;">
+							<td colspan="3" style="text-align:right;">Total</td>
+							<td style="text-align:right;">{{  purchases.reduce((acc, pre)=>{return acc + pre.purchase.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_SubTotalAmount)}, 0)},0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{  purchases.reduce((acc, pre)=>{return acc + pre.purchase.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_Tax)}, 0)},0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{  purchases.reduce((acc, pre)=>{return acc + pre.purchase.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_DiscountAmount)}, 0)},0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{  purchases.reduce((acc, pre)=>{return acc + pre.purchase.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_Freight)}, 0)},0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{  purchases.reduce((acc, pre)=>{return acc + pre.purchase.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_TotalAmount)}, 0)},0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{  purchases.reduce((acc, pre)=>{return acc + pre.purchase.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_PaidAmount)}, 0)},0).toFixed(2) }}</td>
+							<td style="text-align:right;">{{  purchases.reduce((acc, pre)=>{return acc + pre.purchase.reduce((prev, curr)=>{return prev + parseFloat(curr.PurchaseMaster_DueAmount)}, 0)},0).toFixed(2) }}</td>
+							<td></td>
+							<td></td>
+						</tr>
+					</tfoot>
+				</table>
 
 				<table class="record-table" v-if="searchTypesForDetails.includes(searchType)" style="display:none;" v-bind:style="{display: searchTypesForDetails.includes(searchType) ? '' : 'none'}">
 					<thead>
@@ -292,6 +421,7 @@
 <script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/lodash.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
@@ -397,14 +527,70 @@
 				axios.post(url, filter)
 					.then(res => {
 						if (this.recordType == 'with_details') {
-							this.purchases = res.data;
+							let results = res.data;
+							if (this.searchType == 'supplier') {
+								results = _.chain(results)
+									.groupBy('Supplier_SlNo')
+									.map(purchase => {
+										return {
+											Supplier_Name: purchase[0].Supplier_Name,
+											purchase: _.chain(purchase)
+												.groupBy('PurchaseMaster_SlNo')
+												.map(product => {
+													return {
+														PurchaseMaster_SlNo: product[0].PurchaseMaster_SlNo,
+														PurchaseMaster_InvoiceNo: product[0].PurchaseMaster_InvoiceNo,
+														PurchaseMaster_OrderDate: product[0].PurchaseMaster_OrderDate,
+														Supplier_Name: product[0].Supplier_Name,
+														PurchaseMaster_TotalAmount: product[0].PurchaseMaster_TotalAmount,
+														PurchaseMaster_PaidAmount: product[0].PurchaseMaster_PaidAmount,
+														PurchaseMaster_DueAmount: product[0].PurchaseMaster_DueAmount,
+														PurchaseMaster_Description: product[0].PurchaseMaster_Description,
+														purchaseDetails: product[0].purchaseDetails,
+													}
+												})
+												.value()
+										}
+									})
+									.value();
+								this.purchases = results;
+							} else {
+								this.purchases = results;
+							}
 						} else {
-							this.purchases = res.data.purchases;
-						}
-					})
-					.catch(error => {
-						if (error.response) {
-							alert(`${error.response.status}, ${error.response.statusText}`);
+							let results = res.data.purchases;
+							if (this.searchType == 'supplier') {
+								results = _.chain(results)
+									.groupBy('Supplier_SlNo')
+									.map(purchase => {
+										return {
+											Supplier_Name: purchase[0].Supplier_Name,
+											purchase: _.chain(purchase)
+												.groupBy('PurchaseMaster_SlNo')
+												.map(product => {
+													return {
+														PurchaseMaster_SlNo: product[0].PurchaseMaster_SlNo,
+														PurchaseMaster_InvoiceNo: product[0].PurchaseMaster_InvoiceNo,
+														PurchaseMaster_OrderDate: product[0].PurchaseMaster_OrderDate,
+														Supplier_Name: product[0].Supplier_Name,
+														PurchaseMaster_SubTotalAmount: product[0].PurchaseMaster_SubTotalAmount,
+														PurchaseMaster_Tax: product[0].PurchaseMaster_Tax,
+														PurchaseMaster_DiscountAmount: product[0].PurchaseMaster_DiscountAmount,
+														PurchaseMaster_Freight: product[0].PurchaseMaster_Freight,
+														PurchaseMaster_TotalAmount: product[0].PurchaseMaster_TotalAmount,
+														PurchaseMaster_PaidAmount: product[0].PurchaseMaster_PaidAmount,
+														PurchaseMaster_DueAmount: product[0].PurchaseMaster_DueAmount,
+														PurchaseMaster_Description: product[0].PurchaseMaster_Description,
+													}
+												})
+												.value()
+										}
+									})
+									.value();
+								this.purchases = results;
+							} else {
+								this.purchases = results;
+							}
 						}
 					})
 			},
@@ -420,11 +606,6 @@
 					.then(res => {
 						this.purchases = res.data;
 					})
-					.catch(error => {
-						if (error.response) {
-							alert(`${error.response.status}, ${error.response.statusText}`);
-						}
-					})
 			},
 			deletePurchase(purchaseId) {
 				let deleteConf = confirm('Are you sure?');
@@ -439,11 +620,6 @@
 						alert(r.message);
 						if (r.success) {
 							this.getPurchaseRecord();
-						}
-					})
-					.catch(error => {
-						if (error.response) {
-							alert(`${error.response.status}, ${error.response.statusText}`);
 						}
 					})
 			},

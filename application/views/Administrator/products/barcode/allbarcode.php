@@ -145,7 +145,8 @@
                                     <div style="width: 134.5px; text-align: center; float: right;">
                                         <p class="article" style="font-size: 12px;"><?php echo $article; ?></p>
                                         <p style="font-size: 12px; text-align: center; margin:4px 0;line-height: 1;"><?php echo $item->Product_Name; ?></p>
-                                        <img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $item->Product_Code; ?>' style="height: 35px; width: 108px;" /><br>
+                                        <img src='<?php echo site_url(); ?>GenerateBarcode/<?php echo $item->Product_Code; ?>' style="height: 30px; width: 108px;" /><br>
+                                        <p style="font-size: 12px;margin:0;text-align:center;line-height:1;font-weight: bold;"><?php echo $item->Product_Code; ?></p>
                                         <p style="margin:0;text-align: center;"><?php echo $this->session->userdata('Currency_Name') . ' ' . $item->Product_SellingPrice; ?></p>
                                     </div>
                                 </div>

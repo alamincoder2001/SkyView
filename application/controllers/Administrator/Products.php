@@ -263,6 +263,7 @@ class Products extends CI_Controller
                 pc.ProductCategory_Name,
                 b.brand_name,
                 u.Unit_Name,
+                s.Supplier_Name,
                 (select ifnull(sum(pd.PurchaseDetails_TotalQuantity), 0) 
                     from tbl_purchasedetails pd 
                     join tbl_purchasemaster pm on pm.PurchaseMaster_SlNo = pd.PurchaseMaster_IDNo
@@ -327,6 +328,7 @@ class Products extends CI_Controller
             from tbl_product p
             left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
             left join tbl_brand b on b.brand_SiNo = p.brand
+            left join tbl_supplier s on s.Supplier_SlNo = p.supplierId
             left join tbl_unit u on u.Unit_SlNo = p.Unit_ID
             where p.status = 'a' and p.is_service = 'false' $clauses
         ")->result();

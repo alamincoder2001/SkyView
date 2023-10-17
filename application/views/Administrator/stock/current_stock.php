@@ -116,7 +116,54 @@
 					</tfoot>
 				</table>
 
-				<table class="table table-bordered" v-if="searchType != 'current' && searchType != null" style="display:none;" v-bind:style="{display: searchType != 'current' && searchType != null ? '' : 'none'}">
+				<table class="table table-bordered" v-if="searchType == 'supplier' && searchType != 'current' && searchType != null" style="display:none;" v-bind:style="{display: searchType != 'current' && searchType != null && searchType=='supplier' ? '' : 'none'}">
+					<thead>
+						<tr>
+							<th>Product Id</th>
+							<th>Product Name</th>
+							<th>Category</th>
+							<th>Purchased Quantity</th>
+							<th>Purchase Returned Quantity</th>
+							<th>Damaged Quantity</th>
+							<th>Sold Quantity</th>
+							<th>Sales Returned Quantity</th>
+							<th>Transferred In Quantity</th>
+							<th>Transferred Out Quantity</th>
+							<th>Current Quantity</th>
+							<th>Rate</th>
+							<th>Stock Value</th>
+						</tr> 
+					</thead>
+					<tbody>
+						<template v-for="item in stock">
+							<tr>
+								<td colspan="13" style="background: #7e7e7e;color: white;font-weight: 900;">{{item.Supplier_Name}}</td>
+							</tr>
+							<tr v-for="product in item.products">
+								<td>{{ product.Product_Code }}</td>
+								<td>{{ product.Product_Name }}</td>
+								<td>{{ product.ProductCategory_Name }}</td>
+								<td>{{ product.purchased_quantity }}</td>
+								<td>{{ product.purchase_returned_quantity }}</td>
+								<td>{{ product.damaged_quantity }}</td>
+								<td>{{ product.sold_quantity }}</td>
+								<td>{{ product.sales_returned_quantity }}</td>
+								<td>{{ product.transferred_to_quantity}}</td>
+								<td>{{ product.transferred_from_quantity}}</td>
+								<td>{{ product.current_quantity }} {{ product.Unit_Name }}</td>
+								<td>{{ product.Product_Purchase_Rate | decimal }}</td>
+								<td>{{ product.stock_value | decimal }}</td>
+							</tr>
+						</template>
+					</tbody>
+					<tfoot>
+						<tr>
+							<th colspan="12" style="text-align:right;">Total Stock Value</th>
+							<th>{{ totalStockValue | decimal }}</th>
+						</tr>
+					</tfoot>
+				</table>
+				<table class="table table-bordered" v-if="searchType != 'current' && searchType != null && searchType != 'supplier'" style="display:none;" v-bind:style="{display: searchType != 'current' && searchType != null && searchType != 'supplier' ? '' : 'none'}">
 					<thead>
 						<tr>
 							<th>Product Id</th>
@@ -168,6 +215,7 @@
 <script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/lodash.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
@@ -201,17 +249,17 @@
 					text: 'select',
 					value: ''
 				},
-				searchType      : null,
-				date            : moment().format('YYYY-MM-DD'),
-				categories      : [],
+				searchType: null,
+				date: moment().format('YYYY-MM-DD'),
+				categories: [],
 				selectedCategory: null,
-				products        : [],
-				selectedProduct : null,
-				brands          : [],
-				selectedBrand   : null,
-				suppliers       : [],
+				products: [],
+				selectedProduct: null,
+				brands: [],
+				selectedBrand: null,
+				suppliers: [],
 				selectedSupplier: null,
-				selectionText   : '',
+				selectionText: '',
 
 				stock: [],
 				totalStockValue: 0.00
@@ -260,7 +308,7 @@
 				} else if (this.searchType == 'brand' && this.selectedBrand != null) {
 					parameters.brandId = this.selectedBrand.brand_SiNo;
 					this.selectionText = "Brand: " + this.selectedBrand.brand_name;
-				}else if (this.searchType == 'supplier' && this.selectedSupplier != null) {
+				} else if (this.searchType == 'supplier' && this.selectedSupplier != null) {
 					parameters.supplierId = this.selectedSupplier.Supplier_SlNo;
 					this.selectionText = "Supplier: " + this.selectedSupplier.Supplier_Name;
 				}
@@ -270,8 +318,43 @@
 					if (this.searchType == 'current') {
 						this.stock = res.data.stock.filter((pro) => pro.current_quantity != 0);
 					} else {
-						this.stock = res.data.stock;
+						if (this.searchType == 'supplier') {
+							let stocks = res.data.stock;
+							stocks = _.chain(stocks)
+								.groupBy('supplierId')
+								.map(stock => {
+									return {
+										Supplier_Name: stock[0].Supplier_Name,
+										products: _.chain(stock)
+											.groupBy('Product_SlNo')
+											.map(product => {
+												return {
+													Product_Code: product[0].Product_Code,
+													Product_Name: product[0].Product_Name,
+													ProductCategory_Name: product[0].ProductCategory_Name,
+													purchased_quantity: product[0].purchased_quantity,
+													purchase_returned_quantity: product[0].purchase_returned_quantity,
+													damaged_quantity: product[0].damaged_quantity,
+													sold_quantity: product[0].sold_quantity,
+													sales_returned_quantity: product[0].sales_returned_quantity,
+													transferred_to_quantity: product[0].transferred_to_quantity,
+													transferred_from_quantity: product[0].transferred_from_quantity,
+													current_quantity: product[0].current_quantity,
+													Product_SellingPrice: product[0].Product_SellingPrice,
+													stock_value: product[0].stock_value,
+												}
+											})
+											.value()
+									}
+								})
+								.value();
+
+							this.stock = stocks;
+						} else {
+							this.stock = res.data.stock;
+						}
 					}
+
 					this.totalStockValue = res.data.totalValue;
 				})
 			},
