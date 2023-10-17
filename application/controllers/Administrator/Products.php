@@ -331,6 +331,7 @@ class Products extends CI_Controller
             left join tbl_supplier s on s.Supplier_SlNo = p.supplierId
             left join tbl_unit u on u.Unit_SlNo = p.Unit_ID
             where p.status = 'a' and p.is_service = 'false' $clauses
+            order by s.Supplier_Name asc
         ")->result();
 
         $res['stock'] = $stock;
