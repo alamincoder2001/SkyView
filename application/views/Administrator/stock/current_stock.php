@@ -132,7 +132,7 @@
 							<th>Current Quantity</th>
 							<th>Rate</th>
 							<th>Stock Value</th>
-						</tr> 
+						</tr>
 					</thead>
 					<tbody>
 						<template v-for="item in stock">
@@ -313,7 +313,6 @@
 					this.selectionText = "Supplier: " + this.selectedSupplier.Supplier_Name;
 				}
 
-
 				axios.post(url, parameters).then(res => {
 					if (this.searchType == 'current') {
 						this.stock = res.data.stock.filter((pro) => pro.current_quantity != 0);
@@ -349,7 +348,8 @@
 								})
 								.value();
 
-							this.stock = stocks;
+							let r = stocks.sortBy('Supplier_Name')
+							this.stock = r;
 						} else {
 							this.stock = res.data.stock;
 						}
@@ -420,4 +420,11 @@
 			}
 		}
 	})
+
+	//sort by name
+	Array.prototype.sortBy = function(p) {
+		return this.slice(0).sort(function(a, b) {
+			return (a[p] > b[p]) ? 1 : (a[p] < b[p]) ? -1 : 0;
+		});
+	}
 </script>
